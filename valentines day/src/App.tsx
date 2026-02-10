@@ -124,7 +124,7 @@ export default function App() {
               
               <div className="flex items-center justify-center gap-2 text-rose-400 text-sm mt-12">
                 <Lock size={14} />
-                <span>Expressly for You</span>
+                <span>For Mi Love</span>
               </div>
             </motion.div>
           )}
