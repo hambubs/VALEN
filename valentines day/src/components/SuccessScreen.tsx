@@ -3,7 +3,16 @@ import { motion } from 'motion/react';
 import { Heart, Calendar, MapPin, Sparkles, Flower2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
+const BRIDGERTON_QUOTES = [
+  "I love you desperately. My heart aches for you.",
+  "You are the bane of my existence and the object of all my desires.",
+  "To meet a beautiful woman is one thing, but to meet your best friend in the most beautiful of women is something entirely apart.",
+  "It has been you. It has always been you."
+];
+
 export function SuccessScreen() {
+  const randomQuote = BRIDGERTON_QUOTES[Math.floor(Math.random() * BRIDGERTON_QUOTES.length)];
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -95,6 +104,15 @@ export function SuccessScreen() {
       <div className="pt-10">
         <p className="text-sm text-gray-400 text-[20px]">Cant wait for you to be in my arms ❤️</p>
       </div>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+        className="mt-12 p-6 bg-rose-900/10 rounded-xl border border-rose-200 italic font-serif text-rose-800 text-center max-w-lg"
+      >
+        "{randomQuote}"
+        <div className="text-xs text-rose-400 mt-2 not-italic uppercase tracking-widest">— Bridgerton (and Me)</div>
+      </motion.div>
     </motion.div>
   );
 }

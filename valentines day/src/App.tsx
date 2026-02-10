@@ -5,10 +5,13 @@ import { FloatingHearts } from './components/FloatingHearts';
 import { ValentineQuestion } from './components/ValentineQuestion';
 import { SuccessScreen } from './components/SuccessScreen';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
+import { LoginScreen } from './components/LoginScreen';
 
 type Stage = 'intro' | 'question' | 'success';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const handleLoginSuccess = () => setIsAuthenticated(true);
   const [stage, setStage] = useState<Stage>('intro');
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -39,6 +42,8 @@ export default function App() {
     }
     setStage('question');
   };
+
+  if (!isAuthenticated) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100"><LoginScreen onLogin={handleLoginSuccess} /></div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-100 font-sans text-gray-900 selection:bg-rose-200 selection:text-rose-900 overflow-x-hidden">
