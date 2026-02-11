@@ -15,13 +15,13 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
       "No",
       "Are you sure?",
       "Really sure?",
-      "Think again!",
-      "Last chance!",
+      "BUT WHY?",
+      "HAW",
       "Surely not?",
-      "You might regret this!",
+      "How can you do this to me?!",
       "Give it another thought!",
       "Are you absolutely sure?",
-      "This could be a mistake!",
+      "This is a mistake!",
       "Have a heart!",
       "Don't be so cold!",
       "Change of heart?",
@@ -56,8 +56,12 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
       </div>
       
       <h1 className={`text-4xl font-serif text-rose-600 font-bold leading-tight transition-opacity duration-500 ${noCount > 10 ? 'opacity-0' : 'opacity-100'}`}>
-        Will you be my Valentine?
+        Tamanna, will you be my Valentine? 🌻
       </h1>
+      
+      <p className={`text-lg text-rose-500/80 font-light transition-opacity duration-500 ${noCount > 10 ? 'opacity-0' : 'opacity-100'}`}>
+        Distance implies so little when someone means so much.
+      </p>
       
       <div className="flex items-center justify-center gap-4 relative w-full h-32">
         <motion.button
@@ -107,7 +111,7 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
           animate={{ opacity: 1, scale: 1 }}
           className="text-rose-600 font-black text-2xl tracking-widest drop-shadow-sm uppercase"
         >
-          Resistance is FUTILE...
+          Resistance is FUTILE
         </motion.p>
       )}
     </motion.div>

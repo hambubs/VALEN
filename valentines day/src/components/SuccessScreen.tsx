@@ -65,7 +65,7 @@ export function SuccessScreen() {
         transition={{ delay: 0.5 }}
         className="w-full max-w-lg space-y-4"
       >
-        <h2 className="text-2xl font-serif text-rose-600 font-bold">3 Reasons Why I Love You</h2>
+        <h2 className="text-2xl font-serif text-rose-600 font-bold">Reasons Why I Love You</h2>
         <div className="grid grid-cols-1 gap-3">
           {[
             "Your beautiful smile that brightens my day",

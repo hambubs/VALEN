@@ -7,8 +7,10 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const [showHints, setShowHints] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
   const [overrideTarget, setOverrideTarget] = useState<number | null>(null);
@@ -19,6 +21,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
   const isDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.search.includes('dev=true'));
 
+  const VALID_USERNAMES = ['tamanna', 'tamanna mi love', 'my love', 'testing'];
   const VALID_PASSWORDS = ['donkey', 'my love', 'baby', 'mi love', 'testing'];
 
   const calculateTimeLeft = () => {
@@ -55,18 +58,20 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    const user = username.toLowerCase().trim();
     const pass = password.toLowerCase().trim();
 
-    if (VALID_PASSWORDS.includes(pass)) {
+    if (VALID_USERNAMES.includes(user) && VALID_PASSWORDS.includes(pass)) {
       const time = calculateTimeLeft();
       // "testing" allows bypass for dev
-      if (time === "It's Time! ❤️" || pass === 'testing') {
+      if (time === "It's Time! ❤️" || (user === 'testing' && pass === 'testing')) {
         onLogin();
       } else {
         setShowTimer(true);
       }
     } else {
       setError(true);
+      setShowHints(true);
       setTimeout(() => setError(false), 1000);
     }
   };
@@ -82,38 +87,72 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           <div className="relative">
             <div className="absolute inset-0 bg-rose-500 blur-xl opacity-20 animate-pulse"></div>
             <div className="bg-white/10 p-4 rounded-full border border-white/10 relative">
-              <Lock size={32} className="text-rose-400" />
+              <motion.div 
+                animate={{ scale: [1, 1.2, 1] }} 
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                <Heart size={32} className="text-white-500 fill-rose-500" />
+              </motion.div>
             </div>
-            <motion.div 
-              animate={{ scale: [1, 1.2, 1] }} 
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="absolute -top-1 -right-1"
-            >
-              <Heart size={16} className="text-rose-500 fill-rose-500" />
-            </motion.div>
           </div>
         </div>
 
         <h2 className="text-2xl font-bold text-white mb-2 font-serif tracking-wide">
            <span className="text-rose-400">Heart Gate</span>
         </h2>
-        <p className="text-rose-200/60 text-sm mb-8">Enter the password to enter.</p>
+        <p className="text-rose-200/60 text-sm mb-8">Enter the username and password to enter.</p>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-3">
+          <div className="relative group">
+            <input 
+              type="text" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username..."
+              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-black placeholder-white/30 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all text-center tracking-widest"
+            />
+            <AnimatePresence>
+              {showHints && (
+                <motion.p 
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="text-[9px] text-rose-300 mt-1 font-small"
+                >
+                  💡 Hint: Your beautiful name or what I call you
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
+
           <div className="relative group">
             <input 
               type={showPassword ? 'text' : 'password'} 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password..."
-              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-black placeholder-white/30 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all text-center tracking-widest"
+              className="w-full px-4 py-3 pr-28 bg-black/20 border border-white/10 rounded-xl text-black placeholder-white/30 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all text-center tracking-widest"
               autoFocus
             />
-            <div className="absolute right-3 top-3.5 flex items-center gap-2">
-              <button type="button" onClick={() => setShowPassword(s => !s)} className="text-rose-400/80 text-xs">{showPassword ? 'Hide' : 'Show'}</button>
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+              <button type="button" onClick={() => setShowPassword(s => !s)} className="text-rose-400/80 text-xs whitespace-nowrap">{showPassword ? 'Hide' : 'Show'}</button>
               <Stars className="text-rose-500/50 w-4 h-4 opacity-80" />
             </div>
+            <AnimatePresence>
+              {showHints && (
+                <motion.p 
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="text-[9px] text-rose-300 mt-1 font-small"
+                >
+                  💡 Hint: A special word between us
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
+
+          <div className="pt-4"></div>
 
           <motion.button 
             whileHover={{ scale: 1.02 }}
@@ -124,7 +163,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </motion.button>
         </form>
 
-        <div className="mt-3 text-xs text-rose-200/70">Hint: try <span className="font-mono">sunflower</span> or use <span className="font-mono">testing</span> to bypass (dev).</div>
 
         {isDev && (
           <div className="mt-4 flex items-center justify-center gap-3">
