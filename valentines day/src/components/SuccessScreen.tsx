@@ -11,7 +11,6 @@ const BRIDGERTON_QUOTES = [
 ];
 
 export function SuccessScreen() {
-  const randomQuote = BRIDGERTON_QUOTES[Math.floor(Math.random() * BRIDGERTON_QUOTES.length)];
 
   return (
     <motion.div 
@@ -42,7 +41,7 @@ export function SuccessScreen() {
 
       <div className="space-y-4">
         <h1 className="text-5xl font-serif text-rose-600 font-black">Yay! I knew you'd say yes! 🌻</h1>
-        <p className="text-xl text-gray-600">Distance means so little when you mean so much. I've got a special virtual date planned for us...</p>
+        <p className="text-xl text-gray-600">I've got a special virtual date planned for us...</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
@@ -104,15 +103,21 @@ export function SuccessScreen() {
       <div className="pt-10">
         <p className="text-sm text-gray-400 text-[20px]">Cant wait for you to be in my arms ❤️</p>
       </div>
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="mt-12 p-6 bg-rose-900/10 rounded-xl border border-rose-200 italic font-serif text-rose-800 text-center max-w-lg"
-      >
-        "{randomQuote}"
-        <div className="text-xs text-rose-400 mt-2 not-italic uppercase tracking-widest">— Bridgerton (and Me)</div>
-      </motion.div>
+      <div className="w-full max-w-lg mt-12 space-y-4">
+        {BRIDGERTON_QUOTES.map((q, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: i * 0.15 }}
+            className="p-6 bg-rose-900/10 rounded-xl border border-rose-200 italic font-serif text-rose-800 text-center"
+          >
+            "{q}"
+            <div className="text-xs text-rose-400 mt-2 not-italic uppercase tracking-widest">— Bridgerton (and Me)</div>
+          </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 }

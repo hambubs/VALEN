@@ -104,7 +104,7 @@ export default function App() {
                   Hey Gorgeous,
                 </h1>
                 <p className="text-xl text-rose-800/70 max-w-md mx-auto leading-relaxed">
-                  I have a very special question to ask you today. It's something I've been thinking about for a while... 🌻
+                  I have a very special question to ask you today. It's something I've been wanting to do for a while... 🌻
                 </p>
               </div>
 
@@ -143,7 +143,7 @@ export default function App() {
       </main>
 
       <footer className="fixed bottom-0 w-full p-4 flex justify-between items-center text-rose-400/50 text-xs pointer-events-none">
-        <p>Made with Love • Feb 14, 2026</p>
+        <p>Made with Love</p>
         <div className="flex gap-4">
           <Music size={14} />
           <Heart size={14} fill="currentColor" />

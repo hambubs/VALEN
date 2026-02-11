@@ -60,7 +60,7 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
       </h1>
       
       <p className={`text-lg text-rose-500/80 font-light transition-opacity duration-500 ${noCount > 10 ? 'opacity-0' : 'opacity-100'}`}>
-        Distance implies so little when someone means so much.
+        Distance means so little when you mean so much.
       </p>
       
       <div className="flex items-center justify-center gap-4 relative w-full h-32">
