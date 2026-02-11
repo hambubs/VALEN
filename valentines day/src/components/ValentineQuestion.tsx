@@ -21,7 +21,7 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
       "How can you do this to me?!",
       "Give it another thought!",
       "Are you absolutely sure?",
-      "This is a mistake!",
+      "EVIL",
       "Have a heart!",
       "Don't be so cold!",
       "Change of heart?",
