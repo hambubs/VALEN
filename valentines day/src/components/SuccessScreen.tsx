@@ -107,11 +107,12 @@ export function SuccessScreen() {
         {BRIDGERTON_QUOTES.map((q, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: (i % 2 === 0 ? -50 : 50) }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: i * 0.15 }}
-            className="p-6 bg-rose-900/10 rounded-xl border border-rose-200 italic font-serif text-rose-800 text-center"
+            exit={{ opacity: 0, x: (i % 2 === 0 ? -50 : 50) }}
+            viewport={{ once: false, amount: 0.5 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className={`p-6 bg-rose-900/10 rounded-xl border border-rose-200 italic font-serif text-rose-800 text-center ${i % 2 === 0 ? 'mr-auto' : 'ml-auto'} max-w-xs`}
           >
             "{q}"
             <div className="text-xs text-rose-400 mt-2 not-italic uppercase tracking-widest">— Bridgerton (and Me)</div>
