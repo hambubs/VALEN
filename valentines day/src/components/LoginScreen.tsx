@@ -139,7 +139,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                   exit={{ opacity: 0 }}
                   className="text-[9px] text-rose-300 mt-1 font-small"
                 >
-                  💡 Hint: Your beautiful name or what I call you
+                  💡 Hint: What I call you
                 </motion.p>
               )}
             </AnimatePresence>
@@ -169,7 +169,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                   exit={{ opacity: 0 }}
                   className="text-[9px] text-rose-300 mt-1 font-small"
                 >
-                  💡 Hint: A special word between us
+                  💡 Hint: What you call me
                 </motion.p>
               )}
             </AnimatePresence>

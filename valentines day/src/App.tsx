@@ -9,6 +9,8 @@ import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { LoginScreen } from './components/LoginScreen';
 import { ANIMATION_DURATIONS, AUDIO_CONFIG } from './constants/animations';
 import sunflowerImg3 from './assets/3.jpeg'
+import taylor from './assets/song.mp3'
+
 
 type Stage = 'intro' | 'question' | 'success' | 'gallery';
 
@@ -23,9 +25,9 @@ export default function App() {
 
   useEffect(() => {
     // Using a romantic, soft piano melody from a public domain source
-    const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+    const audio = new Audio(taylor);
     audio.loop = true;
-    audio.volume = AUDIO_CONFIG.DEFAULT_VOLUME;
+    audio.volume = 1.0;
     audioRef.current = audio;
 
     // Restart audio if it ends (fallback for older browsers/sources)
