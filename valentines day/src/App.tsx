@@ -4,11 +4,12 @@ import { Heart, Music, MailOpen, Lock, Volume2, VolumeX } from 'lucide-react';
 import { FloatingHearts } from './components/FloatingHearts';
 import { ValentineQuestion } from './components/ValentineQuestion';
 import { SuccessScreen } from './components/SuccessScreen';
+import { MemoryGarden } from './components/MemoryGarden';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { LoginScreen } from './components/LoginScreen';
 import { ANIMATION_DURATIONS, AUDIO_CONFIG } from './constants/animations';
 
-type Stage = 'intro' | 'question' | 'success';
+type Stage = 'intro' | 'question' | 'success' | 'gallery';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -183,7 +184,41 @@ export default function App() {
           )}
 
           {stage === 'success' && (
-            <SuccessScreen key="success" />
+            <motion.div key="success" className="w-full">
+              <SuccessScreen />
+              <motion.div className="flex justify-center mt-8">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setStage('gallery')}
+                  className="px-8 py-3 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg transition-all"
+                >
+                  View Our Memory Garden →
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {stage === 'gallery' && (
+            <motion.div
+              key="gallery"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full"
+            >
+              <MemoryGarden />
+              <motion.div className="flex justify-center mt-8 mb-12">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setStage('success')}
+                  className="px-8 py-3 bg-white/80 backdrop-blur-sm text-rose-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all border border-rose-200 hover:border-rose-400"
+                >
+                  ← Back
+                </motion.button>
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
       </main>

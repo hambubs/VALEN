@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, Calendar, MapPin, Sparkles, Flower2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -64,6 +64,8 @@ const REASONS_LIST = [
   "Because you make everything worth it"
 ];
 
+const LETTER_TEXT = "Every day with you feels like Valentine's Day. I can't wait to celebrate another year of us. You mean the world to me, and I'm so lucky to have you in my life.";
+
 export function SuccessScreen() {
   const [displayedReasons, setDisplayedReasons] = useState<string[]>([
     "Your beautiful smile that brightens my day",
@@ -71,6 +73,16 @@ export function SuccessScreen() {
     "How incredibly kind and supportive you are"
   ]);
   const [lastAddedReason, setLastAddedReason] = useState<string | null>(null);
+  const [revealedChars, setRevealedChars] = useState(0);
+
+  useEffect(() => {
+    if (revealedChars < LETTER_TEXT.length) {
+      const timer = setTimeout(() => {
+        setRevealedChars(prev => prev + 1);
+      }, 30);
+      return () => clearTimeout(timer);
+    }
+  }, [revealedChars]);
 
   const getRandomReason = (currentDisplayed: string[]) => {
     // Get reasons not yet shown (based on provided list)
@@ -122,22 +134,27 @@ export function SuccessScreen() {
       </div>
 
       <div className="space-y-4">
-        <h1 className="text-5xl font-serif text-rose-600 font-black">Yay! I knew you'd say yes! 🌻</h1>
-        <p className="text-xl text-gray-600">I've got a special virtual date planned for us...</p>
+        <h1 className="text-5xl font-serif text-rose-600 font-black">YAY! SHE SAID YESSSSSSSSSSSSSSS! 🌻</h1>
+        <p className="text-xl text-gray-600">We have a special date today</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-rose-100 flex flex-col items-center">
           <Calendar className="text-rose-500 mb-3" size={32} />
-          <h3 className="font-bold text-gray-800">Date & Time</h3>
-          <p className="text-gray-600">February 14th @ 7:00 PM</p>
+          <h3 className="font-bold text-gray-800">Date</h3>
+          <p className="text-gray-600">February 14th</p>
         </div>
         
-        <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-rose-100 flex flex-col items-center">
+        <a 
+          href="https://meet.google.com/hjn-ndud-adx" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-rose-100 flex flex-col items-center hover:shadow-lg hover:border-rose-300 transition-all cursor-pointer"
+        >
           <MapPin className="text-rose-500 mb-3" size={32} />
           <h3 className="font-bold text-gray-800">Location</h3>
-          <p className="text-gray-600">Our Favorite Spot (It's a secret!)</p>
-        </div>
+          <p className="text-rose-600 font-semibold hover:underline">Join Google Meet</p>
+        </a>
       </div>
 
       <motion.div 
@@ -188,9 +205,17 @@ export function SuccessScreen() {
       >
         <Heart className="text-rose-500 mx-auto mb-4" fill="currentColor" />
         <p className="text-rose-800 italic text-lg leading-relaxed font-serif">
-          "Every day with you feels like Valentine's Day. I can't wait to celebrate another year of us. You mean the world to me, and I'm so lucky to have you in my life."
+          "{LETTER_TEXT.substring(0, revealedChars)}"
+          {revealedChars < LETTER_TEXT.length && <span className="animate-pulse">|</span>}
         </p>
-        <p className="mt-4 font-bold text-rose-600">— Your Favorite Person</p>
+        <motion.p 
+          className="mt-4 font-bold text-rose-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: revealedChars === LETTER_TEXT.length ? 1 : 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          — Your Favorite Person
+        </motion.p>
       </motion.div>
       
       <div className="pt-10">
