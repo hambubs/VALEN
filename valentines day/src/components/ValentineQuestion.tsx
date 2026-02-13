@@ -154,7 +154,7 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
         <motion.p 
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-rose-600 font-black text-2xl tracking-widest drop-shadow-sm uppercase"
+          className="mt-6 text-rose-600 font-black text-2xl tracking-widest drop-shadow-sm uppercase"
         >
           Resistance is FUTILE
         </motion.p>
