@@ -48,35 +48,29 @@ export default function App() {
         clearTimeout(audioErrorTimeoutRef.current);
       }
     };
-  }, [isMuted]);
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.muted = isMuted;
-      // If unmuted and not already playing, start playing
-      if (!isMuted && (stage === 'question' || stage === 'success')) {
-        if (audioRef.current.paused) {
-          audioRef.current.play().catch(() => {
-            // Silently handle if play fails
-          });
-        }
-      }
     }
-  }, [isMuted, stage]);
+  }, [isMuted]);
 
   const handleStart = () => {
-    if (audioRef.current && !isMuted) {
-      audioRef.current.play().catch((err: Error) => {
-        console.warn('Audio play blocked by browser:', err.message);
-        setAudioError(true);
-        // Auto-dismiss error after timeout
-        if (audioErrorTimeoutRef.current) {
-          clearTimeout(audioErrorTimeoutRef.current);
-        }
-        audioErrorTimeoutRef.current = setTimeout(() => {
-          setAudioError(false);
-        }, AUDIO_CONFIG.PLAY_ERROR_TIMEOUT);
-      });
+    if (audioRef.current) {
+      if (!isMuted) {
+        audioRef.current.play().catch((err: Error) => {
+          console.warn('Audio play blocked by browser:', err.message);
+          setAudioError(true);
+          // Auto-dismiss error after timeout
+          if (audioErrorTimeoutRef.current) {
+            clearTimeout(audioErrorTimeoutRef.current);
+          }
+          audioErrorTimeoutRef.current = setTimeout(() => {
+            setAudioError(false);
+          }, AUDIO_CONFIG.PLAY_ERROR_TIMEOUT);
+        });
+      }
     }
     setStage('question');
   };

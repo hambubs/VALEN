@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'motion/react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Heart, Calendar, MapPin, Sparkles, Flower2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
@@ -10,7 +10,89 @@ const BRIDGERTON_QUOTES = [
   "It has been you. It has always been you."
 ];
 
+const REASONS_LIST = [
+  "Your beautiful smile that brightens my day",
+  "The way you always know how to make me laugh",
+  "How incredibly kind and supportive you are",
+  "Your infectious sense of humor",
+  "The way your eyes light up when you talk about things you love",
+  "Your patience and understanding",
+  "How you make me feel seen and valued",
+  "Your strength and resilience",
+  "The little things you do without asking",
+  "How you listen when I need to talk",
+  "Your creativity and unique perspective",
+  "The way you care about others so deeply",
+  "Your gentle touch and warm hugs",
+  "How you remember the small details about me",
+  "Your courage to be yourself",
+  "The way you dance even when no one's watching",
+  "How you challenge me to be better",
+  "Your loyalty and dedication",
+  "The way your voice sounds when you're genuinely happy",
+  "How you make ordinary moments feel special",
+  "Your wisdom beyond your years",
+  "The way you dream big and take risks",
+  "How you handle difficult moments with grace",
+  "Your contagious positivity",
+  "The way you love unconditionally",
+  "Your intelligence and curiosity",
+  "How you make me feel alive",
+  "Your ability to forgive and move forward",
+  "The way you celebrate my victories as your own",
+  "How you accept me completely, flaws and all",
+  "Your passion for life",
+  "The way you make home wherever you are",
+  "How you bring out the best in me",
+  "Your thoughtful gestures and surprises",
+  "The way you fight for what you believe in",
+  "How you light up a room just by walking in",
+  "Your genuine interest in my day",
+  "The way you comfort me without words",
+  "How you inspire me daily",
+  "Your ability to find joy in simplicity",
+  "The way you love our long conversations",
+  "How you make ordinary boring moments fun",
+  "Your strength when I feel weak",
+  "The way you encourage my dreams",
+  "How you make the future look so beautiful",
+  "Your trust and faith in me",
+  "The way you fit perfectly in my arms",
+  "How you're my favorite person to be around",
+  "Your beautiful soul",
+  "The way distance can never change how I feel",
+  "Because you make everything worth it"
+];
+
 export function SuccessScreen() {
+  const [displayedReasons, setDisplayedReasons] = useState<string[]>([
+    "Your beautiful smile that brightens my day",
+    "The way you always know how to make me laugh",
+    "How incredibly kind and supportive you are"
+  ]);
+  const [lastAddedReason, setLastAddedReason] = useState<string | null>(null);
+
+  const getRandomReason = (currentDisplayed: string[]) => {
+    // Get reasons not yet shown (based on provided list)
+    const availableReasons = REASONS_LIST.filter(r => !currentDisplayed.includes(r));
+
+    if (availableReasons.length === 0) {
+      // If we've shown all reasons, reset and show a random one
+      return REASONS_LIST[Math.floor(Math.random() * REASONS_LIST.length)];
+    }
+
+    return availableReasons[Math.floor(Math.random() * availableReasons.length)];
+  };
+
+  const handleAddReason = () => {
+    // Use functional update to avoid stale closures when clicking rapidly
+    setDisplayedReasons(prev => {
+      const newReason = getRandomReason(prev);
+      setLastAddedReason(newReason);
+      return [...prev, newReason];
+    });
+  };
+
 
   return (
     <motion.div 
@@ -66,25 +148,36 @@ export function SuccessScreen() {
       >
         <h2 className="text-2xl font-serif text-rose-600 font-bold">Reasons Why I Love You</h2>
         <div className="grid grid-cols-1 gap-3">
-          {[
-            "Your beautiful smile that brightens my day",
-            "The way you always know how to make me laugh",
-            "How incredibly kind and supportive you are"
-          ].map((reason, i) => (
-            <motion.div 
-              key={i}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.8 + (i * 0.2) }}
-              className="bg-white/50 p-4 rounded-xl border border-rose-100 flex items-center gap-3"
-            >
-              <div className="bg-yellow-100 p-2 rounded-full text-yellow-600">
-                <Flower2 size={16} fill="currentColor" />
-              </div>
-              <p className="text-gray-700 font-medium">{reason}</p>
-            </motion.div>
-          ))}
+          <AnimatePresence mode="popLayout">
+            {displayedReasons.map((reason, i) => (
+              <motion.div 
+                key={reason}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className={`p-4 rounded-xl border flex items-center gap-3 ${
+                  reason === lastAddedReason
+                    ? 'bg-yellow-100 border-yellow-300 shadow-lg'
+                    : 'bg-white/50 border-rose-100'
+                }`}
+              >
+                <div className="bg-yellow-100 p-2 rounded-full text-yellow-600 flex-shrink-0">
+                  <Flower2 size={16} fill="currentColor" />
+                </div>
+                <p className="text-gray-700 font-medium text-sm">{reason}</p>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
+        
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleAddReason}
+          className="w-full mt-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-black font-bold rounded-xl shadow-lg transition-all"
+        >
+          ✨ Click for more... 
+        </motion.button>
       </motion.div>
 
       <motion.div 
@@ -101,7 +194,7 @@ export function SuccessScreen() {
       </motion.div>
       
       <div className="pt-10">
-        <p className="text-sm text-gray-400 text-[20px]">Cant wait for you to be in my arms ❤️</p>
+        <p className="text-sm text-rose-400 text-[20px]">Cant wait for you to be in my arms ❤️</p>
       </div>
       <div className="w-full max-w-lg mt-12 space-y-4">
         {BRIDGERTON_QUOTES.map((q, i) => (

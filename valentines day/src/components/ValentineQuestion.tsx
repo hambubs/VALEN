@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { VALENTINE_QUESTION, SPRING_CONFIG, ANIMATION_DURATIONS } from '../constants/animations';
@@ -10,15 +10,72 @@ interface ValentineQuestionProps {
 export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
   const [noCount, setNoCount] = useState(0);
   const [noButtonPos, setNoButtonPos] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const noButtonRef = useRef<HTMLButtonElement | null>(null);
+  const yesButtonRef = useRef<HTMLButtonElement | null>(null);
   
   const getNoButtonText = () => {
     return VALENTINE_QUESTION.NO_PHRASES[Math.min(noCount, VALENTINE_QUESTION.NO_PHRASES.length - 1)];
   };
 
   const handleNoHover = () => {
-    const newX = (Math.random() - 0.5) * VALENTINE_QUESTION.NO_BUTTON_MOVE_RANGE;
-    const newY = (Math.random() - 0.5) * VALENTINE_QUESTION.NO_BUTTON_MOVE_RANGE;
-    setNoButtonPos({ x: newX, y: newY });
+    // Move the no button farther as the yes button grows, but keep it inside the container.
+    // Use polar coordinates and robust clamping to prevent off-screen jumps.
+    const containerRect = containerRef.current?.getBoundingClientRect() ?? document.documentElement.getBoundingClientRect();
+    const yesRect = yesButtonRef.current?.getBoundingClientRect();
+    const noRect = noButtonRef.current?.getBoundingClientRect();
+
+    const noW = noRect?.width ?? 80;
+    const noH = noRect?.height ?? 36;
+    const yesW = (yesRect?.width ?? 120) * yesButtonScale;
+    const yesH = (yesRect?.height ?? 48) * yesButtonScale;
+
+    // base and extra distance influenced by yes button scale
+    const baseDistance = 120;
+    const extraPerScale = 50;
+    let distance = baseDistance + yesButtonScale * extraPerScale;
+
+    // compute the maximum allowed x/y offsets so the no button stays inside the container
+    const maxX = Math.max(8, containerRect.width / 2 - noW / 2 - 8);
+    const maxY = Math.max(8, containerRect.height / 2 - noH / 2 - 8);
+
+    // maximum reachable radius inside the container rectangle
+    const radiusMax = Math.hypot(maxX, maxY);
+
+    // minimum distance from the yes button to avoid overlap
+    const minDistance = (yesW / 2) + (noW / 2) + 18 * yesButtonScale;
+
+    // ensure distance is within allowed range
+    distance = Math.min(distance, radiusMax);
+    if (distance < minDistance) distance = Math.min(minDistance, radiusMax);
+
+    // pick a random angle and compute coords relative to container center
+    const angle = Math.random() * Math.PI * 2;
+    let targetX = Math.cos(angle) * distance;
+    let targetY = Math.sin(angle) * distance;
+
+    // If the computed point exceeds rectangular bounds, scale it down along the ray
+    if (Math.abs(targetX) > maxX || Math.abs(targetY) > maxY) {
+      const scaleX = Math.abs(targetX) > 0 ? maxX / Math.abs(targetX) : 1;
+      const scaleY = Math.abs(targetY) > 0 ? maxY / Math.abs(targetY) : 1;
+      const scale = Math.min(scaleX, scaleY, 1);
+      targetX *= scale;
+      targetY *= scale;
+    }
+
+    // final safety: ensure not overlapping yes button center (which is near 0,0 in this layout)
+    const dx = targetX;
+    const dy = targetY;
+    const actualDist = Math.hypot(dx, dy);
+    if (actualDist < minDistance) {
+      // push out along same angle to minDistance but clamped to radiusMax
+      const wanted = Math.min(minDistance, radiusMax);
+      const factor = wanted / (actualDist || 1);
+      targetX *= factor;
+      targetY *= factor;
+    }
+
+    setNoButtonPos({ x: targetX, y: targetY });
     // Cap the noCount at MAX_NO_CLICKS to prevent unbounded state growth
     setNoCount(prev => Math.min(prev + 1, VALENTINE_QUESTION.MAX_NO_CLICKS));
   };
@@ -48,9 +105,10 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
         Distance means so little when you mean so much.
       </p>
       
-      <div className="flex items-center justify-center gap-4 relative w-full h-32">
+      <div ref={containerRef} className="flex items-center justify-center gap-4 relative w-full min-h-20">
         <motion.button
           layout
+          ref={yesButtonRef}
           onClick={onYes}
           animate={{ 
             scale: yesButtonScale,
@@ -72,6 +130,7 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
         
         {!isCoveringScreen && (
           <motion.button
+            ref={noButtonRef}
             animate={{ x: noButtonPos.x, y: noButtonPos.y }}
             onMouseEnter={handleNoHover}
             onClick={handleNoHover}

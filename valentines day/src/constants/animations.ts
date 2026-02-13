@@ -19,7 +19,7 @@ export const ANIMATION_DURATIONS = {
 // Floating hearts configuration
 export const FLOATING_HEARTS = {
   ELEMENT_COUNT: 25,
-  INITIAL_DELAY_MAX: 20,
+  INITIAL_DELAY_MAX: 3,
   SCALE_MIN: 0.5,
   SCALE_MAX: 1,
   SIZE_MIN: 12,

@@ -124,6 +124,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Username..."
+              autoFocus
               className={`w-full px-4 py-3 bg-black/20 border rounded-xl text-black placeholder-white/30 focus:outline-none focus:ring-1 transition-all text-center tracking-widest ${
                 error && !username 
                   ? 'border-red-500/70 focus:border-red-500 focus:ring-red-500/50' 
@@ -155,7 +156,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                   ? 'border-red-500/70 focus:border-red-500 focus:ring-red-500/50' 
                   : 'border-white/10 focus:border-rose-500/50 focus:ring-rose-500/50'
               }`}
-              autoFocus
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
               <button type="button" onClick={() => setShowPassword(s => !s)} className="text-rose-400/80 text-xs whitespace-nowrap">{showPassword ? 'Hide' : 'Show'}</button>
