@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Calendar, MapPin, Sparkles, Flower2 } from 'lucide-react';
+import { Heart, Calendar, MapPin, Sparkles, Flower2, Plane } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import sunflowerImg from '../assets/2.jpeg'
 
@@ -257,6 +257,36 @@ export function SuccessScreen() {
         >
           — Your Favorite Person
         </motion.p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.8 }}
+        className="w-full max-w-lg bg-white/80 backdrop-blur-sm p-6 rounded-3xl border border-rose-100 shadow-md"
+      >
+        <p className="text-rose-700 font-serif text-lg mb-4">350km is nothing for this airline.</p>
+        <div className="relative">
+          <div className="relative h-10">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2">
+              <div className="w-3 h-3 rounded-full bg-rose-500 shadow" />
+            </div>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+              <div className="w-3 h-3 rounded-full bg-rose-500 shadow" />
+            </div>
+            <div className="absolute left-3 right-3 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-rose-300" />
+            <div className="love-plane-track">
+              <div className="love-plane">
+                <Plane size={16} className="text-white" />
+                <Heart size={10} className="love-plane-heart" fill="currentColor" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-xs font-semibold text-rose-700 tracking-wide">
+            <span className="max-w-[45%] text-left">Bangalore</span>
+            <span className="max-w-[45%] text-right">Chennai</span>
+          </div>
+        </div>
       </motion.div>
       
       <div className="pt-10">
