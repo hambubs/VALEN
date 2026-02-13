@@ -6,6 +6,7 @@ import { ValentineQuestion } from './components/ValentineQuestion';
 import { SuccessScreen } from './components/SuccessScreen';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { LoginScreen } from './components/LoginScreen';
+import { ANIMATION_DURATIONS, AUDIO_CONFIG } from './constants/animations';
 
 type Stage = 'intro' | 'question' | 'success';
 
@@ -14,18 +15,37 @@ export default function App() {
   const handleLoginSuccess = () => setIsAuthenticated(true);
   const [stage, setStage] = useState<Stage>('intro');
   const [isMuted, setIsMuted] = useState(false);
+  const [audioError, setAudioError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioErrorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Using a romantic, soft piano melody from a public domain source
-    audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.3;
+    const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+    audio.loop = true;
+    audio.volume = AUDIO_CONFIG.DEFAULT_VOLUME;
+    audioRef.current = audio;
+
+    // Restart audio if it ends (fallback for older browsers/sources)
+    const handleAudioEnd = () => {
+      if (audioRef.current && !isMuted) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {
+          // Silently handle if play fails
+        });
+      }
+    };
+    
+    audio.addEventListener('ended', handleAudioEnd);
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.removeEventListener('ended', handleAudioEnd);
         audioRef.current = null;
+      }
+      if (audioErrorTimeoutRef.current) {
+        clearTimeout(audioErrorTimeoutRef.current);
       }
     };
   }, []);
@@ -38,7 +58,19 @@ export default function App() {
 
   const handleStart = () => {
     if (audioRef.current) {
-      audioRef.current.play().catch(err => console.log("Audio play blocked by browser:", err));
+      if (!isMuted) {
+        audioRef.current.play().catch((err: Error) => {
+          console.warn('Audio play blocked by browser:', err.message);
+          setAudioError(true);
+          // Auto-dismiss error after timeout
+          if (audioErrorTimeoutRef.current) {
+            clearTimeout(audioErrorTimeoutRef.current);
+          }
+          audioErrorTimeoutRef.current = setTimeout(() => {
+            setAudioError(false);
+          }, AUDIO_CONFIG.PLAY_ERROR_TIMEOUT);
+        });
+      }
     }
     setStage('question');
   };
@@ -57,6 +89,20 @@ export default function App() {
       >
         {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
       </button>
+
+      {/* Audio Error Feedback */}
+      <AnimatePresence>
+        {audioError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-amber-100 text-amber-800 px-4 py-3 rounded-lg shadow-lg border border-amber-200"
+          >
+            <p className="text-sm font-medium">🔇 Audio is muted by your browser. Click the speaker icon to enable.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <main className="relative z-10 min-h-screen flex flex-col items-center justify-center py-12 px-4">
         <AnimatePresence mode="wait">
@@ -75,7 +121,7 @@ export default function App() {
                     scale: [1, 1.05, 1]
                   }}
                   transition={{ 
-                    duration: 4, 
+                    duration: ANIMATION_DURATIONS.INTRO_IMAGE_BOUNCE, 
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
@@ -91,7 +137,7 @@ export default function App() {
                   <div className="text-yellow-500">
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                      transition={{ duration: ANIMATION_DURATIONS.HEART_ROTATE, repeat: Infinity, ease: "linear" }}
                     >
                       <Heart className="text-rose-500" fill="currentColor" size={32} />
                     </motion.div>

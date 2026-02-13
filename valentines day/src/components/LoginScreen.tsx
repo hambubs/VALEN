@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Lock, Heart, Stars, Eye, EyeOff } from 'lucide-react';
+import { Lock, Heart, Stars, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { LOGIN_CONFIG } from '../constants/animations';
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -9,7 +10,7 @@ interface LoginScreenProps {
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string>("");
   const [showHints, setShowHints] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
@@ -43,7 +44,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     const timer = setInterval(() => {
       const time = calculateTimeLeft();
       setTimeLeft(time ?? "");
-    }, 1000);
+    }, LOGIN_CONFIG.TIMER_UPDATE_INTERVAL);
     return () => clearInterval(timer);
   }, [overrideTarget]);
 
@@ -51,7 +52,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   useEffect(() => {
     if (showTimer && (timeLeft === "It's Time! ❤️")) {
       // small delay so UI updates
-      const t = setTimeout(() => onLogin(), 600);
+      const t = setTimeout(() => onLogin(), LOGIN_CONFIG.AUTO_UNLOCK_DELAY);
       return () => clearTimeout(t);
     }
   }, [showTimer, timeLeft, onLogin]);
@@ -60,6 +61,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     e.preventDefault();
     const user = username.toLowerCase().trim();
     const pass = password.toLowerCase().trim();
+
+    // Validation: Check for empty fields
+    if (!user || !pass) {
+      setError(!user ? 'Please enter your username' : 'Please enter your password');
+      setShowHints(true);
+      const timeout = setTimeout(() => setError(""), 2500);
+      return () => clearTimeout(timeout);
+    }
 
     if (VALID_USERNAMES.includes(user) && VALID_PASSWORDS.includes(pass)) {
       const time = calculateTimeLeft();
@@ -70,9 +79,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         setShowTimer(true);
       }
     } else {
-      setError(true);
+      // More specific error messages
+      if (!VALID_USERNAMES.includes(user)) {
+        setError('❌ Username not recognized');
+      } else {
+        setError('❌ Password is incorrect');
+      }
       setShowHints(true);
-      setTimeout(() => setError(false), 1000);
+      const timeout = setTimeout(() => setError(""), 2500);
+      return () => clearTimeout(timeout);
     }
   };
 
@@ -109,7 +124,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Username..."
-              className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-black placeholder-white/30 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all text-center tracking-widest"
+              autoFocus
+              className={`w-full px-4 py-3 bg-black/20 border rounded-xl text-black placeholder-white/30 focus:outline-none focus:ring-1 transition-all text-center tracking-widest ${
+                error && !username 
+                  ? 'border-red-500/70 focus:border-red-500 focus:ring-red-500/50' 
+                  : 'border-white/10 focus:border-rose-500/50 focus:ring-rose-500/50'
+              }`}
             />
             <AnimatePresence>
               {showHints && (
@@ -131,8 +151,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password..."
-              className="w-full px-4 py-3 pr-28 bg-black/20 border border-white/10 rounded-xl text-black placeholder-white/30 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all text-center tracking-widest"
-              autoFocus
+              className={`w-full px-4 py-3 pr-28 bg-black/20 border rounded-xl text-black placeholder-white/30 focus:outline-none focus:ring-1 transition-all text-center tracking-widest ${
+                error && !password 
+                  ? 'border-red-500/70 focus:border-red-500 focus:ring-red-500/50' 
+                  : 'border-white/10 focus:border-rose-500/50 focus:ring-rose-500/50'
+              }`}
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
               <button type="button" onClick={() => setShowPassword(s => !s)} className="text-rose-400/80 text-xs whitespace-nowrap">{showPassword ? 'Hide' : 'Show'}</button>
@@ -191,14 +214,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
         <AnimatePresence>
           {error && (
-            <motion.p 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="text-red-400 text-xs mt-4 font-medium"
+              className="flex items-center gap-2 px-4 py-3 bg-red-500/20 border border-red-500/50 rounded-lg mt-4 text-red-300 text-sm font-medium"
             >
-              ⛔ Access Denied: Incorrect Password
-            </motion.p>
+              <AlertCircle size={16} className="flex-shrink-0" />
+              <span>{error}</span>
+            </motion.div>
           )}
 
           {showTimer && (
