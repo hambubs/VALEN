@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { VALENTINE_QUESTION, SPRING_CONFIG, ANIMATION_DURATIONS } from '../constants/animations';
+import sunflowerImg2 from '../assets/1.jpeg'
 
 interface ValentineQuestionProps {
   onYes: () => void;
@@ -91,7 +92,7 @@ export function ValentineQuestion({ onYes }: ValentineQuestionProps) {
     >
       <div className={`w-48 h-48 rounded-2xl overflow-hidden shadow-xl mb-4 border-4 border-white transition-opacity duration-500 ${noCount > VALENTINE_QUESTION.IMAGE_FADE_THRESHOLD ? 'opacity-0' : 'opacity-100'}`}>
         <ImageWithFallback 
-          src="https://images.unsplash.com/photo-1758748930322-54d750ba4e5e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaW5nbGUlMjBzdW5mbG93ZXIlMjBhZXN0aGV0aWN8ZW58MXx8fHwxNzcwNjIyODM4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+          src={sunflowerImg2}
           alt="A sunflower for my sunflower"
           className="w-full h-full object-cover"
         />

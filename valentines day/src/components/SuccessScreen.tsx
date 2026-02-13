@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, Calendar, MapPin, Sparkles, Flower2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import sunflowerImg from '../assets/2.jpeg'
 
 const BRIDGERTON_QUOTES = [
   "I love you desperately. My heart aches for you.",
@@ -126,7 +127,7 @@ export function SuccessScreen() {
         
         <div className="w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
           <ImageWithFallback 
-            src="https://images.unsplash.com/photo-1674274197411-fec149074156?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZXN0aGV0aWMlMjBzdW5mbG93ZXJzJTIwZmllbGQlMjBib3VxdWV0fGVufDF8fHx8MTc3MDYyMjgyOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+            src={sunflowerImg}
             alt="Sunflower Celebration"
             className="w-full h-full object-cover"
           />

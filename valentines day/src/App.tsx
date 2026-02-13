@@ -8,6 +8,7 @@ import { MemoryGarden } from './components/MemoryGarden';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import { LoginScreen } from './components/LoginScreen';
 import { ANIMATION_DURATIONS, AUDIO_CONFIG } from './constants/animations';
+import sunflowerImg3 from './assets/3.jpeg'
 
 type Stage = 'intro' | 'question' | 'success' | 'gallery';
 
@@ -129,7 +130,7 @@ export default function App() {
                   className="w-64 h-64 rounded-full overflow-hidden border-8 border-white shadow-2xl"
                 >
                   <ImageWithFallback 
-                    src="https://images.unsplash.com/photo-1674274197411-fec149074156?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZXN0aGV0aWMlMjBzdW5mbG93ZXJzJTIwZmllbGQlMjBib3VxdWV0fGVufDF8fHx8MTc3MDYyMjgyOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    src={sunflowerImg3}
                     alt="Sunflowers for you"
                     className="w-full h-full object-cover"
                   />
@@ -187,14 +188,7 @@ export default function App() {
             <motion.div key="success" className="w-full">
               <SuccessScreen />
               <motion.div className="flex justify-center mt-8">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setStage('gallery')}
-                  className="px-8 py-3 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg transition-all"
-                >
-                  View Our Memory Garden →
-                </motion.button>
+                
               </motion.div>
             </motion.div>
           )}
