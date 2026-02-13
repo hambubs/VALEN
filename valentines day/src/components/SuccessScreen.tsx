@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, Calendar, MapPin, Sparkles, Flower2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -75,15 +75,48 @@ export function SuccessScreen() {
   ]);
   const [lastAddedReason, setLastAddedReason] = useState<string | null>(null);
   const [revealedChars, setRevealedChars] = useState(0);
+  const [scrambleTick, setScrambleTick] = useState(0);
 
   useEffect(() => {
     if (revealedChars < LETTER_TEXT.length) {
       const timer = setTimeout(() => {
         setRevealedChars(prev => prev + 1);
-      }, 30);
+      }, 60);
       return () => clearTimeout(timer);
     }
   }, [revealedChars]);
+
+  useEffect(() => {
+    if (revealedChars < LETTER_TEXT.length) {
+      const timer = setInterval(() => {
+        setScrambleTick(prev => prev + 1);
+      }, 90);
+      return () => clearInterval(timer);
+    }
+    return undefined;
+  }, [revealedChars]);
+
+  const getRandomGlyph = () => {
+    const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    return glyphs[Math.floor(Math.random() * glyphs.length)];
+  };
+
+  const getDecryptedText = () => {
+    const result: { char: string; isNew: boolean }[] = [];
+    for (let i = 0; i < LETTER_TEXT.length; i += 1) {
+      const char = LETTER_TEXT[i];
+      if (i < revealedChars) {
+        result.push({ char, isNew: i === revealedChars - 1 });
+      } else if (char === ' ') {
+        result.push({ char: ' ', isNew: false });
+      } else {
+        result.push({ char: getRandomGlyph(), isNew: false });
+      }
+    }
+    return result;
+  };
+
+  const decryptedText = useMemo(() => getDecryptedText(), [revealedChars, scrambleTick]);
 
   const getRandomReason = (currentDisplayed: string[]) => {
     // Get reasons not yet shown (based on provided list)
@@ -206,7 +239,14 @@ export function SuccessScreen() {
       >
         <Heart className="text-rose-500 mx-auto mb-4" fill="currentColor" />
         <p className="text-rose-800 italic text-lg leading-relaxed font-serif">
-          "{LETTER_TEXT.substring(0, revealedChars)}"
+          "{decryptedText.map((item, i) => (
+            <span
+              key={i}
+              className={item.isNew ? 'love-letter-glow text-rose-700' : undefined}
+            >
+              {item.char}
+            </span>
+          ))}"
           {revealedChars < LETTER_TEXT.length && <span className="animate-pulse">|</span>}
         </p>
         <motion.p 

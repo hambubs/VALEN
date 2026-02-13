@@ -1565,3 +1565,21 @@ html {
   inherits: false;
   initial-value: 1;
 }
+
+@keyframes love-letter-glow {
+  0% {
+    text-shadow: 0 0 0 rgba(244, 63, 94, 0);
+  }
+  50% {
+    text-shadow:
+      0 0 10px rgba(244, 63, 94, 0.75),
+      0 0 20px rgba(251, 113, 133, 0.55);
+  }
+  100% {
+    text-shadow: 0 0 0 rgba(244, 63, 94, 0);
+  }
+}
+
+.love-letter-glow {
+  animation: love-letter-glow 1.2s ease-out;
+}
