@@ -1,9 +1,112 @@
-import React from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Heart, Calendar, MapPin, Sparkles, Flower2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import sunflowerImg from '../assets/2.jpeg'
+
+const BRIDGERTON_QUOTES = [
+  "I love you desperately. My heart aches for you.",
+  "You are the bane of my existence and the object of all my desires.",
+  "To meet a beautiful woman is one thing, but to meet your best friend in the most beautiful of women is something entirely apart.",
+  "It has been you. It has always been you."
+];
+
+const REASONS_LIST = [
+  "Your beautiful smile that brightens my day",
+  "The way you always know how to make me laugh",
+  "How incredibly kind and supportive you are",
+  "Your infectious sense of humor",
+  "The way your eyes light up when you talk about things you love",
+  "Your patience and understanding",
+  "How you make me feel seen and valued",
+  "Your strength and resilience",
+  "The little things you do without asking",
+  "How you listen when I need to talk",
+  "Your creativity and unique perspective",
+  "The way you care about others so deeply",
+  "Your gentle touch and warm hugs",
+  "How you remember the small details about me",
+  "Your courage to be yourself",
+  "The way you dance even when no one's watching",
+  "How you challenge me to be better",
+  "Your loyalty and dedication",
+  "The way your voice sounds when you're genuinely happy",
+  "How you make ordinary moments feel special",
+  "Your wisdom beyond your years",
+  "The way you dream big and take risks",
+  "How you handle difficult moments with grace",
+  "Your contagious positivity",
+  "The way you love unconditionally",
+  "Your intelligence and curiosity",
+  "How you make me feel alive",
+  "Your ability to forgive and move forward",
+  "The way you celebrate my victories as your own",
+  "How you accept me completely, flaws and all",
+  "Your passion for life",
+  "The way you make home wherever you are",
+  "How you bring out the best in me",
+  "Your thoughtful gestures and surprises",
+  "The way you fight for what you believe in",
+  "How you light up a room just by walking in",
+  "Your genuine interest in my day",
+  "The way you comfort me without words",
+  "How you inspire me daily",
+  "Your ability to find joy in simplicity",
+  "The way you love our long conversations",
+  "How you make ordinary boring moments fun",
+  "Your strength when I feel weak",
+  "The way you encourage my dreams",
+  "How you make the future look so beautiful",
+  "Your trust and faith in me",
+  "The way you fit perfectly in my arms",
+  "How you're my favorite person to be around",
+  "Your beautiful soul",
+  "The way distance can never change how I feel",
+  "Because you make everything worth it"
+];
+
+const LETTER_TEXT = "Every day with you feels like Valentine's Day. I can't wait to celebrate another year of us. You mean the world to me, and I'm so lucky to have you in my life.";
 
 export function SuccessScreen() {
+  const [displayedReasons, setDisplayedReasons] = useState<string[]>([
+    "Your beautiful smile that brightens my day",
+    "The way you always know how to make me laugh",
+    "How incredibly kind and supportive you are"
+  ]);
+  const [lastAddedReason, setLastAddedReason] = useState<string | null>(null);
+  const [revealedChars, setRevealedChars] = useState(0);
+
+  useEffect(() => {
+    if (revealedChars < LETTER_TEXT.length) {
+      const timer = setTimeout(() => {
+        setRevealedChars(prev => prev + 1);
+      }, 30);
+      return () => clearTimeout(timer);
+    }
+  }, [revealedChars]);
+
+  const getRandomReason = (currentDisplayed: string[]) => {
+    // Get reasons not yet shown (based on provided list)
+    const availableReasons = REASONS_LIST.filter(r => !currentDisplayed.includes(r));
+
+    if (availableReasons.length === 0) {
+      // If we've shown all reasons, reset and show a random one
+      return REASONS_LIST[Math.floor(Math.random() * REASONS_LIST.length)];
+    }
+
+    return availableReasons[Math.floor(Math.random() * availableReasons.length)];
+  };
+
+  const handleAddReason = () => {
+    // Use functional update to avoid stale closures when clicking rapidly
+    setDisplayedReasons(prev => {
+      const newReason = getRandomReason(prev);
+      setLastAddedReason(newReason);
+      return [...prev, newReason];
+    });
+  };
+
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -24,7 +127,7 @@ export function SuccessScreen() {
         
         <div className="w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
           <ImageWithFallback 
-            src="https://images.unsplash.com/photo-1674274197411-fec149074156?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZXN0aGV0aWMlMjBzdW5mbG93ZXJzJTIwZmllbGQlMjBib3VxdWV0fGVufDF8fHx8MTc3MDYyMjgyOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+            src={sunflowerImg}
             alt="Sunflower Celebration"
             className="w-full h-full object-cover"
           />
@@ -32,22 +135,27 @@ export function SuccessScreen() {
       </div>
 
       <div className="space-y-4">
-        <h1 className="text-5xl font-serif text-rose-600 font-black">Yay! I knew you'd say yes! 🌻</h1>
-        <p className="text-xl text-gray-600">Distance means so little when you mean so much. I've got a special virtual date planned for us...</p>
+        <h1 className="text-5xl font-serif text-rose-600 font-black">YAY! SHE SAID YESSSSSSSSSSSSSSS! 🌻</h1>
+        <p className="text-xl text-gray-600">We have a special date today</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-rose-100 flex flex-col items-center">
           <Calendar className="text-rose-500 mb-3" size={32} />
-          <h3 className="font-bold text-gray-800">Date & Time</h3>
-          <p className="text-gray-600">February 14th @ 7:00 PM</p>
+          <h3 className="font-bold text-gray-800">Date</h3>
+          <p className="text-gray-600">February 14th</p>
         </div>
         
-        <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-rose-100 flex flex-col items-center">
+        <a 
+          href="https://meet.google.com/hjn-ndud-adx" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-rose-100 flex flex-col items-center hover:shadow-lg hover:border-rose-300 transition-all cursor-pointer"
+        >
           <MapPin className="text-rose-500 mb-3" size={32} />
           <h3 className="font-bold text-gray-800">Location</h3>
-          <p className="text-gray-600">Our Favorite Spot (It's a secret!)</p>
-        </div>
+          <p className="text-rose-600 font-semibold hover:underline">Join Google Meet</p>
+        </a>
       </div>
 
       <motion.div 
@@ -56,27 +164,38 @@ export function SuccessScreen() {
         transition={{ delay: 0.5 }}
         className="w-full max-w-lg space-y-4"
       >
-        <h2 className="text-2xl font-serif text-rose-600 font-bold">3 Reasons Why I Love You</h2>
+        <h2 className="text-2xl font-serif text-rose-600 font-bold">Reasons Why I Love You</h2>
         <div className="grid grid-cols-1 gap-3">
-          {[
-            "Your beautiful smile that brightens my day",
-            "The way you always know how to make me laugh",
-            "How incredibly kind and supportive you are"
-          ].map((reason, i) => (
-            <motion.div 
-              key={i}
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.8 + (i * 0.2) }}
-              className="bg-white/50 p-4 rounded-xl border border-rose-100 flex items-center gap-3"
-            >
-              <div className="bg-yellow-100 p-2 rounded-full text-yellow-600">
-                <Flower2 size={16} fill="currentColor" />
-              </div>
-              <p className="text-gray-700 font-medium">{reason}</p>
-            </motion.div>
-          ))}
+          <AnimatePresence mode="popLayout">
+            {displayedReasons.map((reason, i) => (
+              <motion.div 
+                key={reason}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className={`p-4 rounded-xl border flex items-center gap-3 ${
+                  reason === lastAddedReason
+                    ? 'bg-yellow-100 border-yellow-300 shadow-lg'
+                    : 'bg-white/50 border-rose-100'
+                }`}
+              >
+                <div className="bg-yellow-100 p-2 rounded-full text-yellow-600 flex-shrink-0">
+                  <Flower2 size={16} fill="currentColor" />
+                </div>
+                <p className="text-gray-700 font-medium text-sm">{reason}</p>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
+        
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleAddReason}
+          className="w-full mt-6 py-3 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-black font-bold rounded-xl shadow-lg transition-all"
+        >
+          ✨ Click for more... 
+        </motion.button>
       </motion.div>
 
       <motion.div 
@@ -87,13 +206,37 @@ export function SuccessScreen() {
       >
         <Heart className="text-rose-500 mx-auto mb-4" fill="currentColor" />
         <p className="text-rose-800 italic text-lg leading-relaxed font-serif">
-          "Every day with you feels like Valentine's Day. I can't wait to celebrate another year of us. You mean the world to me, and I'm so lucky to have you in my life."
+          "{LETTER_TEXT.substring(0, revealedChars)}"
+          {revealedChars < LETTER_TEXT.length && <span className="animate-pulse">|</span>}
         </p>
-        <p className="mt-4 font-bold text-rose-600">— Your Favorite Person</p>
+        <motion.p 
+          className="mt-4 font-bold text-rose-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: revealedChars === LETTER_TEXT.length ? 1 : 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          — Your Favorite Person
+        </motion.p>
       </motion.div>
       
       <div className="pt-10">
-        <p className="text-sm text-gray-400 text-[20px]">Cant wait for you to be in my arms ❤️</p>
+        <p className="text-sm text-rose-400 text-[20px]">Cant wait for you to be in my arms ❤️</p>
+      </div>
+      <div className="w-full max-w-lg mt-12 space-y-4">
+        {BRIDGERTON_QUOTES.map((q, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: (i % 2 === 0 ? -50 : 50) }}
+            whileInView={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: (i % 2 === 0 ? -50 : 50) }}
+            viewport={{ once: false, amount: 0.5 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className={`p-6 bg-rose-900/10 rounded-xl border border-rose-200 italic font-serif text-rose-800 text-center ${i % 2 === 0 ? 'mr-auto' : 'ml-auto'} max-w-xs`}
+          >
+            "{q}"
+            <div className="text-xs text-rose-400 mt-2 not-italic uppercase tracking-widest">— Bridgerton (and Me)</div>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   );

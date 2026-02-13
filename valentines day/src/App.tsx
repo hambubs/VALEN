@@ -4,25 +4,50 @@ import { Heart, Music, MailOpen, Lock, Volume2, VolumeX } from 'lucide-react';
 import { FloatingHearts } from './components/FloatingHearts';
 import { ValentineQuestion } from './components/ValentineQuestion';
 import { SuccessScreen } from './components/SuccessScreen';
+import { MemoryGarden } from './components/MemoryGarden';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
+import { LoginScreen } from './components/LoginScreen';
+import { ANIMATION_DURATIONS, AUDIO_CONFIG } from './constants/animations';
+import sunflowerImg3 from './assets/3.jpeg'
 
-type Stage = 'intro' | 'question' | 'success';
+type Stage = 'intro' | 'question' | 'success' | 'gallery';
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const handleLoginSuccess = () => setIsAuthenticated(true);
   const [stage, setStage] = useState<Stage>('intro');
   const [isMuted, setIsMuted] = useState(false);
+  const [audioError, setAudioError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioErrorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Using a romantic, soft piano melody from a public domain source
-    audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.3;
+    const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+    audio.loop = true;
+    audio.volume = AUDIO_CONFIG.DEFAULT_VOLUME;
+    audioRef.current = audio;
+
+    // Restart audio if it ends (fallback for older browsers/sources)
+    const handleAudioEnd = () => {
+      if (audioRef.current && !isMuted) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {
+          // Silently handle if play fails
+        });
+      }
+    };
+    
+    audio.addEventListener('ended', handleAudioEnd);
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.removeEventListener('ended', handleAudioEnd);
         audioRef.current = null;
+      }
+      if (audioErrorTimeoutRef.current) {
+        clearTimeout(audioErrorTimeoutRef.current);
       }
     };
   }, []);
@@ -35,10 +60,24 @@ export default function App() {
 
   const handleStart = () => {
     if (audioRef.current) {
-      audioRef.current.play().catch(err => console.log("Audio play blocked by browser:", err));
+      if (!isMuted) {
+        audioRef.current.play().catch((err: Error) => {
+          console.warn('Audio play blocked by browser:', err.message);
+          setAudioError(true);
+          // Auto-dismiss error after timeout
+          if (audioErrorTimeoutRef.current) {
+            clearTimeout(audioErrorTimeoutRef.current);
+          }
+          audioErrorTimeoutRef.current = setTimeout(() => {
+            setAudioError(false);
+          }, AUDIO_CONFIG.PLAY_ERROR_TIMEOUT);
+        });
+      }
     }
     setStage('question');
   };
+
+  if (!isAuthenticated) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 to-pink-100"><LoginScreen onLogin={handleLoginSuccess} /></div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-100 font-sans text-gray-900 selection:bg-rose-200 selection:text-rose-900 overflow-x-hidden">
@@ -52,6 +91,20 @@ export default function App() {
       >
         {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
       </button>
+
+      {/* Audio Error Feedback */}
+      <AnimatePresence>
+        {audioError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-amber-100 text-amber-800 px-4 py-3 rounded-lg shadow-lg border border-amber-200"
+          >
+            <p className="text-sm font-medium">🔇 Audio is muted by your browser. Click the speaker icon to enable.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <main className="relative z-10 min-h-screen flex flex-col items-center justify-center py-12 px-4">
         <AnimatePresence mode="wait">
@@ -70,14 +123,14 @@ export default function App() {
                     scale: [1, 1.05, 1]
                   }}
                   transition={{ 
-                    duration: 4, 
+                    duration: ANIMATION_DURATIONS.INTRO_IMAGE_BOUNCE, 
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
                   className="w-64 h-64 rounded-full overflow-hidden border-8 border-white shadow-2xl"
                 >
                   <ImageWithFallback 
-                    src="https://images.unsplash.com/photo-1674274197411-fec149074156?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhZXN0aGV0aWMlMjBzdW5mbG93ZXJzJTIwZmllbGQlMjBib3VxdWV0fGVufDF8fHx8MTc3MDYyMjgyOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    src={sunflowerImg3}
                     alt="Sunflowers for you"
                     className="w-full h-full object-cover"
                   />
@@ -86,7 +139,7 @@ export default function App() {
                   <div className="text-yellow-500">
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                      transition={{ duration: ANIMATION_DURATIONS.HEART_ROTATE, repeat: Infinity, ease: "linear" }}
                     >
                       <Heart className="text-rose-500" fill="currentColor" size={32} />
                     </motion.div>
@@ -99,7 +152,7 @@ export default function App() {
                   Hey Gorgeous,
                 </h1>
                 <p className="text-xl text-rose-800/70 max-w-md mx-auto leading-relaxed">
-                  I have a very special question to ask you today. It's something I've been thinking about for a while... 🌻
+                  I have a very special question to ask you today. It's something I've been wanting to do for a while... 🌻
                 </p>
               </div>
 
@@ -119,7 +172,7 @@ export default function App() {
               
               <div className="flex items-center justify-center gap-2 text-rose-400 text-sm mt-12">
                 <Lock size={14} />
-                <span>Expressly for You</span>
+                <span>For Mi Love</span>
               </div>
             </motion.div>
           )}
@@ -132,13 +185,40 @@ export default function App() {
           )}
 
           {stage === 'success' && (
-            <SuccessScreen key="success" />
+            <motion.div key="success" className="w-full">
+              <SuccessScreen />
+              <motion.div className="flex justify-center mt-8">
+                
+              </motion.div>
+            </motion.div>
+          )}
+
+          {stage === 'gallery' && (
+            <motion.div
+              key="gallery"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full"
+            >
+              <MemoryGarden />
+              <motion.div className="flex justify-center mt-8 mb-12">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setStage('success')}
+                  className="px-8 py-3 bg-white/80 backdrop-blur-sm text-rose-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all border border-rose-200 hover:border-rose-400"
+                >
+                  ← Back
+                </motion.button>
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
       </main>
 
       <footer className="fixed bottom-0 w-full p-4 flex justify-between items-center text-rose-400/50 text-xs pointer-events-none">
-        <p>Made with Love • Feb 14, 2026</p>
+        <p>Made with Love</p>
         <div className="flex gap-4">
           <Music size={14} />
           <Heart size={14} fill="currentColor" />
